@@ -3,13 +3,21 @@ package com.Applifting.Applifting.common;
 import com.Applifting.Applifting.monitor.MonitorRepository;
 import com.Applifting.Applifting.user.UserRepository;
 import lombok.extern.log4j.Log4j2;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Enumeration;
 
 @Log4j2
@@ -24,72 +32,20 @@ public class MonitorFilter implements HandlerInterceptor {
     UserRepository userRepository;
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler) throws Exception {
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Object object,
+                                Exception arg3) throws IOException {
 
-        log.info("[preHandle][" + request + "]" + "[" + request.getMethod()
-                + "]" + request.getRequestURI() + getParameters(request));
+        log.info("Request is complete");
 
-        return true;
-    }
 
-    @Override
-    public void postHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler,
-            ModelAndView modelAndView) throws Exception {
+        HttpServletResponseCopier responseCopier = new HttpServletResponseCopier(response);
 
-        log.info("[postHandle][" + request + "]");
-    }
+        log.info(String.valueOf(responseCopier.getCopy()));
 
-    @Override
-    public void afterCompletion(
-            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-        if (ex != null){
-            ex.printStackTrace();
-        }
-        log.info("[afterCompletion][" + request + "][exception: " + ex + "]");
-    }
+        log.info("Handler execution is complete");
 
-    private String getParameters(HttpServletRequest request) {
-        StringBuffer posted = new StringBuffer();
-        Enumeration<?> e = request.getParameterNames();
-        if (e != null) {
-            posted.append("?");
-        }
-        while (e.hasMoreElements()) {
-            if (posted.length() > 1) {
-                posted.append("&");
-            }
-            String curr = (String) e.nextElement();
-            posted.append(curr + "=");
-            if (curr.contains("password")
-                    || curr.contains("pass")
-                    || curr.contains("pwd")) {
-                posted.append("*****");
-            } else {
-                posted.append(request.getParameter(curr));
-            }
-        }
-        String ip = request.getHeader("X-FORWARDED-FOR");
-        String ipAddr = (ip == null) ? getRemoteAddr(request) : ip;
-        if (ipAddr!=null && !ipAddr.equals("")) {
-            posted.append("&_psip=" + ipAddr);
-        }
-        return posted.toString();
-    }
-
-    private String getRemoteAddr(HttpServletRequest request) {
-        String ipFromHeader = request.getHeader("X-FORWARDED-FOR");
-        if (ipFromHeader != null && ipFromHeader.length() > 0) {
-            log.debug("ip from proxy - X-FORWARDED-FOR : " + ipFromHeader);
-            return ipFromHeader;
-        }
-        return request.getRemoteAddr();
     }
 
 }
