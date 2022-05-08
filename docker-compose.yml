@@ -1,0 +1,39 @@
+version: "2"
+networks:
+  applifting:
+    driver: bridge
+
+services:
+  mysqlhost:
+    container_name: mysqlhost
+    image: mysql
+    cap_add:
+      - SYS_NICE
+    security_opt:
+      - seccomp:unconfined
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: applifting
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - '3306:3306'
+    volumes:
+      - '~/dev/dbs-data/mysql:/var/lib/mysql'
+    expose:
+      - 3306
+    networks:
+      - applifting
+
+  applifting:
+    container_name: applifting
+    build:
+      context: .
+    image: adoptopenjdk/openjdk11
+    restart: 'no'
+    ports:
+      - "80:8080"
+    networks:
+      - applifting
+    depends_on:
+      - mysqlhost
