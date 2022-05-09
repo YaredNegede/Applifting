@@ -7,10 +7,6 @@ import org.hibernate.criterion.Example;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-
-import java.net.MalformedURLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +14,7 @@ import java.util.Optional;
 @Component
 public class AppliftHttpTraceRepository implements HttpTraceRepository {
 
+    public static String header = "accessToken";
     private final UserRepository userRepository;
 
     private final  MonitorRepository monitorRepository;
@@ -39,13 +36,9 @@ public class AppliftHttpTraceRepository implements HttpTraceRepository {
 
         try {
 
-            User u = new User();
+            String hdr = String.valueOf(trace.getRequest().getHeaders().get(header));
 
-            u.setUsername(trace.getPrincipal().getName());
-
-            org.springframework.data.domain.Example<User> eu = (org.springframework.data.domain.Example<User>) Example.create(u);
-
-            Optional<User>  user = userRepository.findOne(eu);
+            Optional<User>  user = userRepository.findByAccessToken(hdr);
 
             if(user.isPresent()) {
 
@@ -60,12 +53,11 @@ public class AppliftHttpTraceRepository implements HttpTraceRepository {
                         .build();
 
 
+                log.info(monitor.toString());
+
                 monitorRepository.save(monitor);
 
-
             }
-
-            log.info(monitor.toString());
 
         } catch (Exception e) {
 
