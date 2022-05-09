@@ -1,5 +1,5 @@
 # Applifting
-
+You have to cd to project root, have java and maven setup already
 # build
   1. mvn clean package
   2. docker-compose build
