@@ -1,10 +1,7 @@
 package com.Applifting.Applifting.monitor;
 
 import com.Applifting.Applifting.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.ManyToAny;
 
@@ -18,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Monitor {
 
     @Id
@@ -44,11 +42,9 @@ public class Monitor {
     @ManyToOne
     private User user;
 
-    @CreationTimestamp
-    private LocalDateTime dateOfLastCreation;
+    private long dateOfLastCreation;
 
-    @CreationTimestamp
-    private LocalDateTime  dateOfLastCheck;
+    private long  dateOfLastCheck;
 
     private String  payload;
 

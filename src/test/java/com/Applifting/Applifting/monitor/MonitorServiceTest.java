@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class MonitorServiceTest {
         user.setId(1);
 
         Monitor mon = Monitor.builder().httpStatusCode(HttpStatus.OK.value())
-                .dateOfLastCheck(LocalDateTime.MAX)
+                .dateOfLastCheck(Instant.now().toEpochMilli())
                 .interval(131231231l)
                 .build();
 
@@ -76,7 +77,7 @@ public class MonitorServiceTest {
         List<Monitor> data = new ArrayList<>();
 
         Monitor mon = Monitor.builder().httpStatusCode(HttpStatus.OK.value())
-                .dateOfLastCheck(LocalDateTime.MAX)
+                .dateOfLastCheck(Instant.now().toEpochMilli())
                 .interval(131231231l)
                 .build();
 
@@ -100,12 +101,12 @@ public class MonitorServiceTest {
     public void post() {
 
         MonitoringResult mon = MonitoringResult.builder()
-                                            .dateOfCheck(LocalDateTime.MIN)
+                                            .dateOfCheck(Instant.now().toEpochMilli())
                                             .httpStatusCode(HttpStatus.OK.value())
                                             .build();
 
         Monitor mon2 = Monitor.builder()
-                            .dateOfLastCheck(LocalDateTime.MIN)
+                            .dateOfLastCheck(Instant.now().toEpochMilli())
                             .httpStatusCode(HttpStatus.OK.value())
                             .build();
 

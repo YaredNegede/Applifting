@@ -15,7 +15,7 @@ public class MonitoringResult {
 
     private long id;
 
-    private LocalDateTime dateOfCheck;
+    private long dateOfCheck;
 
     private int httpStatusCode;
 
@@ -23,7 +23,7 @@ public class MonitoringResult {
 
     private String monitoredEndPointIdl;
 
-    private LocalDateTime dateOfLastCreation;
+    private long dateOfLastCreation;
 
     private long user;
 
