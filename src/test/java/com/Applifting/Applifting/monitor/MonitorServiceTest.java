@@ -1,5 +1,7 @@
 package com.Applifting.Applifting.monitor;
 
+import com.Applifting.Applifting.user.User;
+import com.Applifting.Applifting.user.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,38 +29,58 @@ public class MonitorServiceTest {
 
     MonitorService monitorService;
 
+    UserRepository userRepository;
+
     @BeforeEach
     public void setup(){
 
         this.monitorRepository = mock(MonitorRepository.class);
 
-        this.monitorService = new MonitorService(monitorRepository,new ModelMapper());
+        this.userRepository = mock(UserRepository.class);
+
+        this.monitorService = new MonitorService(monitorRepository,userRepository);
 
     }
 
     @Test
     public void get() {
 
+        User user = new User();
+
+        user.setId(1);
+
         Monitor mon = Monitor.builder().httpStatusCode(HttpStatus.OK.value())
                 .dateOfLastCheck(LocalDateTime.MAX)
                 .interval(131231231l)
                 .build();
 
+        mon.setUser(user);
+
         when(monitorRepository.findById(any())).thenReturn(Optional.of(mon));
 
         ResponseEntity<MonitoringResult> responseEntity = monitorService.get(1l);
+
         assertThat(responseEntity).isNotNull();
+
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
     @Test
     public  void getAll() {
+
+        User user = new User();
+
+        user.setId(1);
+
         List<Monitor> data = new ArrayList<>();
 
         Monitor mon = Monitor.builder().httpStatusCode(HttpStatus.OK.value())
                 .dateOfLastCheck(LocalDateTime.MAX)
                 .interval(131231231l)
                 .build();
+
+        mon.setUser(user);
 
         data.add(mon);
 
@@ -78,16 +100,22 @@ public class MonitorServiceTest {
     public void post() {
 
         MonitoringResult mon = MonitoringResult.builder()
-                                .dateOfCheck(LocalDateTime.MIN)
-                                .httpStatusCode(HttpStatus.OK.value())
-                                .build();
+                                            .dateOfCheck(LocalDateTime.MIN)
+                                            .httpStatusCode(HttpStatus.OK.value())
+                                            .build();
 
         Monitor mon2 = Monitor.builder()
-                .dateOfLastCheck(LocalDateTime.MIN)
-                .httpStatusCode(HttpStatus.OK.value())
-                .build();
+                            .dateOfLastCheck(LocalDateTime.MIN)
+                            .httpStatusCode(HttpStatus.OK.value())
+                            .build();
 
         when(monitorRepository.save(any())).thenReturn(mon2);
+
+        User user = new User();
+
+        user.setId(1);
+
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         ResponseEntity<Void> responseEntity = monitorService.post(mon);
 
@@ -101,7 +129,9 @@ public class MonitorServiceTest {
     public void delete() {
 
         ResponseEntity<Void> responseEntity = monitorService.delete(1l);
+
         assertThat(responseEntity).isNotNull();
+
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }

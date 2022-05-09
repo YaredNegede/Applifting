@@ -50,4 +50,6 @@ public class Monitor {
     @CreationTimestamp
     private LocalDateTime  dateOfLastCheck;
 
+    private String  payload;
+
 }

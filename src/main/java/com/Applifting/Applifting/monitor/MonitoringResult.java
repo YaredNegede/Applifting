@@ -23,4 +23,9 @@ public class MonitoringResult {
 
     private String monitoredEndPointIdl;
 
+    private LocalDateTime dateOfLastCreation;
+
+    private long user;
+
+
 }
